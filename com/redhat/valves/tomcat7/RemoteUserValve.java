@@ -16,10 +16,18 @@ public class RemoteUserValve extends ValveBase {
     private static final String AUTH_HEADER = "HTTP_AUTH_USER";
     public void invoke(Request request, Response response) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = request.getRequest();
-        final List<String> roles = new ArrayList<String>();
         String authUser = httpServletRequest.getHeader(AUTH_HEADER);
-        final Principal principal = new GenericPrincipal(authUser, NOOP, roles);
-        request.setUserPrincipal(principal);
+        if(authUser!=null) {
+           // For testing purposes only - can be removed after proper functionality has been verified
+           System.out.println("RemoteUserValve - creating principal for user: " + authUser);
+           final List<String> roles = new ArrayList<String>();
+           final Principal principal = new GenericPrincipal(authUser, NOOP, roles);
+           request.setUserPrincipal(principal);
+        } 
+        // For testing purposes only - can be removed after proper functionality has been verified
+        else {
+           System.out.println("RemoteUserValve - no " + AUTH_HEADER + " header present in this request, skipping pre-authentication");
+        }
         getNext().invoke(request, response);
     }
 }
